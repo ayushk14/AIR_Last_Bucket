@@ -35,6 +35,8 @@ start_date=`date`
 
 delta_num=$1
 
+use_bucket=$2
+
 actual_delta_num=$delta_num+1
 
 exp_description="Last Bucket: Seed Model 1 hour + $delta_num delta blocks"
@@ -50,7 +52,7 @@ python3 Python_Files/modify_uttids.py $delta_num
 echo "New train utterance ids created!!!"
 
 # CALL PYTHON SCRIPT AT THIS POINT TO GENERATE THE REQUIRED FILES. THEN PROCEED.
-local_custom/data_prep.sh $AIR
+local_custom/data_prep.sh $AIR $use_bucket
 
 local_custom/create_glm_stm.sh $AIR
 

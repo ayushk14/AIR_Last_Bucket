@@ -9,9 +9,13 @@ AIR_dir = sys.argv[1]
 Recipe_dir = sys.argv[2]
 data_files = sys.argv[3]
 dict_files = sys.argv[4]
+use_bucket = sys.argv[5]
 
 # This list will be generated from the csv file above
-seed_spk_list = ['FA','FB','MA','MB','MC']
+if use_bucket == 'true':
+    seed_spk_list = ['FA','FB','MA','MB','MC','UA','UB','UC','UD','UE']
+else:
+    seed_spk_list = ['FA','FB','MA','MB','MC']
 seed_spk_list.sort()
 bulk_spk_list = ['UA','UB','UC','UD','UE']
 bulk_spk_list.sort()
