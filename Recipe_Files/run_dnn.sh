@@ -32,7 +32,7 @@ if [ $stage -le 0 ]; then
   # Store fMLLR features, so we can train on them easily,
   # test
   dir=$data_fmllr/test
-  steps/nnet/make_fmllr_feats.sh --nj 5 --cmd "$train_cmd" \
+  steps_fa/nnet/make_fmllr_feats.sh --nj 5 --cmd "$train_cmd" \
      --transform-dir $gmmdir/decode_test \
      $dir data/test $gmmdir $dir/log $dir/data || exit 1
   # dev
