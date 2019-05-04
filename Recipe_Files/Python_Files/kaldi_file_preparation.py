@@ -13,10 +13,14 @@ use_bucket = sys.argv[5]
 
 # This list will be generated from the csv file above
 if use_bucket == 'true':
-    seed_spk_list = ['FA','FB','MA','MB','MC','UA','UB','UC','UD','UE']
+    train_spk_list = ['FA','FB','MA','MB','MC','UA','UB','UC','UD','UE']
 else:
-    seed_spk_list = ['FA','FB','MA','MB','MC']
-seed_spk_list.sort()
+    train_spk_list = ['FA','FB','MA','MB','MC']
+train_spk_list.sort()
+
+test_spk_list = ['FA','FB','MA','MB','MC']
+test_spk_list.sort()
+
 bulk_spk_list = ['UA','UB','UC','UD','UE']
 bulk_spk_list.sort()
 
@@ -121,8 +125,10 @@ for x in split_cat:
 for x in split_cat:
     if x == 'dev':
         spk_list = bulk_spk_list
+    elif x == 'train':
+        spk_list = train_spk_list
     else:
-        spk_list = seed_spk_list
+        spk_list = test_spk_list
 
     ref_file = open(Recipe_dir+'/'+data_files+'/'+x+'.utt2spk','r')
     ref_file_content = ref_file.read().split('\n')
@@ -154,8 +160,10 @@ for x in split_cat:
 for x in split_cat:
     if x == 'dev':
         spk_list = bulk_spk_list
+    elif x == 'train':
+        spk_list = train_spk_list
     else:
-        spk_list = seed_spk_list
+        spk_list = test_spk_list
 
     temp_list = []
     for spk in spk_list:
