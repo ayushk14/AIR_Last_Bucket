@@ -29,18 +29,18 @@ numGaussSGMM=9000
 
 feats_nj=10
 train_nj=5
-decode_nj=2
+decode_nj=5
 
 start_date=`date`
 
-exp_description="Seed Model: 1.5hr train, test data same, Forced alignment done on dev"
+exp_description="Last Bucket Sanity: 1 hr train, 3.5 hr test data, FA on complete bulk data"
 
 echo ============================================================================
 echo "                Data & Lexicon & Language Preparation                     "
 echo ============================================================================
 
 # Path to AIR Dataset and other preprocessing files
-AIR=~/AIR # @BUT
+AIR=~/AIR_Data_Final # @BUT
 
 # CALL PYTHON SCRIPT AT THIS POINT TO GENERATE THE REQUIRED FILES. THEN PROCEED.
 local_custom/data_prep.sh $AIR
@@ -82,6 +82,9 @@ utils/mkgraph.sh data/lang_test_bg exp/mono exp/mono/graph
 steps/decode.sh --nj "$decode_nj" --cmd "$decode_cmd" \
  exp/mono/graph data/test exp/mono/decode_test
 
+echo "PRINTING RESULTS---------------------------->"
+bash RESULTS test
+
 echo ============================================================================
 echo "           tri1 : Deltas + Delta-Deltas Training & Decoding               "
 echo ============================================================================
@@ -101,6 +104,9 @@ utils/mkgraph.sh data/lang_test_bg exp/tri1 exp/tri1/graph
 steps/decode.sh --nj "$decode_nj" --cmd "$decode_cmd" \
  exp/tri1/graph data/test exp/tri1/decode_test
 
+echo "PRINTING RESULTS---------------------------->"
+bash RESULTS test
+
 echo ============================================================================
 echo "                 tri2 : LDA + MLLT Training & Decoding                    "
 echo ============================================================================
@@ -119,6 +125,9 @@ utils/mkgraph.sh data/lang_test_bg exp/tri2 exp/tri2/graph
 
 steps/decode.sh --nj "$decode_nj" --cmd "$decode_cmd" \
  exp/tri2/graph data/test exp/tri2/decode_test
+
+echo "PRINTING RESULTS---------------------------->"
+bash RESULTS test
 
 echo ============================================================================
 echo "              tri3 : LDA + MLLT + SAT Training & Decoding                 "
@@ -147,6 +156,7 @@ echo ===========================================================================
 steps/align_fmllr.sh --nj "$train_nj" --cmd "$train_cmd" \
  data/train data/lang exp/tri3 exp/tri3_ali
 
+: <<COMMENT
 #exit 0 # From this point you can run Karel's DNN : local/nnet/run_dnn.sh
 
 steps/train_ubm.sh --cmd "$train_cmd" \
@@ -229,7 +239,7 @@ for iter in 1 2 3 4; do
    data/test data/lang_test_bg exp/tri4_nnet/decode_test \
    exp/sgmm2_4_mmi_b0.1/decode_test_it$iter exp/combine_2/decode_test_it$iter
 done
-
+COMMENT
 echo ============================================================================
 echo "       Getting Intermediate Results [see RESULTS file]                    "
 echo ============================================================================
@@ -248,7 +258,7 @@ echo ===========================================================================
 echo "                    Doing Force Alignment (SGMM2)                         "
 echo ============================================================================
 
-steps_fa/align_fmllr.sh --nj "$train_nj" --cmd "$train_cmd" \
+steps_fa/align_fmllr.sh --nj "$train_nj" retry_beam 250 --cmd "$train_cmd" \
  data/dev data/lang exp/tri3 exp/tri3_ali_fa
 : <<COMMENT
 echo ============================================================================

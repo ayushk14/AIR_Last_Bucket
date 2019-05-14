@@ -32,7 +32,7 @@ if [ $stage -le 0 ]; then
   # Store fMLLR features, so we can train on them easily,
   # test
   dir=$data_fmllr/test
-  steps_fa/nnet/make_fmllr_feats.sh --nj 5 --cmd "$train_cmd" \
+  steps/nnet/make_fmllr_feats.sh --nj 5 --cmd "$train_cmd" \
      --transform-dir $gmmdir/decode_test \
      $dir data/test $gmmdir $dir/log $dir/data || exit 1
   # dev
@@ -42,7 +42,7 @@ if [ $stage -le 0 ]; then
   #   $dir data/dev $gmmdir $dir/log $dir/data || exit 1
   # train
   dir=$data_fmllr/train
-  steps_fa/nnet/make_fmllr_feats.sh --nj 5 --cmd "$train_cmd" \
+  steps/nnet/make_fmllr_feats.sh --nj 5 --cmd "$train_cmd" \
      --transform-dir ${gmmdir}_ali \
      $dir data/train $gmmdir $dir/log $dir/data || exit 1
   # split the data : 90% train 10% cross-validation (held-out)
@@ -73,7 +73,7 @@ if [ $stage -le 2 ]; then
     steps/nnet/train.sh --feature-transform $feature_transform --dbn $dbn --hid-layers 0 --learn-rate 0.008 \
     $data_fmllr/train_tr90 $data_fmllr/train_cv10 data/lang $ali $ali $dir || exit 1;
   # Decode (reuse HCLG graph)
-  steps/nnet/decode.sh --nj 5 --cmd "$decode_cmd" --acwt 0.2 \
+  steps/nnet/decode.sh --nj 2 --cmd "$decode_cmd" --acwt 0.2 \
     $gmmdir/graph $data_fmllr/test $dir/decode_test || exit 1;
   #steps/nnet/decode.sh --nj 20 --cmd "$decode_cmd" --acwt 0.2 \
   #  $gmmdir/graph $data_fmllr/dev $dir/decode_dev || exit 1;
@@ -105,7 +105,7 @@ if [ $stage -le 4 ]; then
     $data_fmllr/train data/lang $srcdir ${srcdir}_ali ${srcdir}_denlats $dir || exit 1
   # Decode
   for ITER in 1 6; do
-    steps/nnet/decode.sh --nj 5 --cmd "$decode_cmd" \
+    steps/nnet/decode.sh --nj 2 --cmd "$decode_cmd" \
       --nnet $dir/${ITER}.nnet --acwt $acwt \
       $gmmdir/graph $data_fmllr/test $dir/decode_test_it${ITER} || exit 1
     #steps/nnet/decode.sh --nj 20 --cmd "$decode_cmd" \
